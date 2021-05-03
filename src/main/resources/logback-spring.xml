@@ -1,0 +1,90 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<configuration>
+    <include resource="org/springframework/boot/logging/logback/defaults.xml" />
+
+    <springProperty scope="context" name="applicationName"
+                    source="spring.application.name" />
+
+    <statusListener class="ch.qos.logback.core.status.NopStatusListener" />
+
+    <springProfile name="stage">
+        <springProperty name="destination" source="log.path" />
+        <property name="LOG_FILE" value="${destination}" />
+        <property name="FILE_LOG_PATTERN"
+                  value="%d{yyyy-MM-dd HH:mm:ss},${applicationName},%X{X-B3-TraceId:-},%X{X-B3-SpanId:-},%X{X-Span-Export:-},%5p,${PID},%t,%logger{0} - %msg%n" />
+
+        <appender name="consoleAppender"
+                  class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <charset>UTF-8</charset>
+                <Pattern>${FILE_LOG_PATTERN}</Pattern>
+            </encoder>
+        </appender>
+        <appender name="FILE"
+                  class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>
+                ${LOG_FILE}
+            </file>
+            <encoder
+                    class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+                <pattern>
+                    ${FILE_LOG_PATTERN}
+                </pattern>
+            </encoder>
+
+            <rollingPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                <!-- rollover daily -->
+                <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+                <maxFileSize>500MB</maxFileSize>
+                <maxHistory>7</maxHistory>
+            </rollingPolicy>
+        </appender>
+
+        <root level="INFO">
+            <appender-ref ref="consoleAppender" />
+            <appender-ref ref="FILE" />
+        </root>
+    </springProfile>
+
+    <springProfile name="debug">
+        <springProperty name="destination" source="log.path" />
+        <property name="LOG_FILE" value="${destination}" />
+        <property name="FILE_LOG_PATTERN"
+                  value="%d{yyyy-MM-dd HH:mm:ss},${applicationName},%X{X-B3-TraceId:-},%X{X-B3-SpanId:-},%X{X-Span-Export:-},%5p,${PID},%t,%logger{0} - %msg%n" />
+
+        <appender name="consoleAppender"
+                  class="ch.qos.logback.core.ConsoleAppender">
+            <encoder>
+                <charset>UTF-8</charset>
+                <Pattern>${FILE_LOG_PATTERN}</Pattern>
+            </encoder>
+        </appender>
+        <appender name="FILE"
+                  class="ch.qos.logback.core.rolling.RollingFileAppender">
+            <file>
+                ${LOG_FILE}
+            </file>
+            <encoder
+                    class="ch.qos.logback.classic.encoder.PatternLayoutEncoder">
+                <pattern>
+                    ${FILE_LOG_PATTERN}
+                </pattern>
+            </encoder>
+
+            <rollingPolicy
+                    class="ch.qos.logback.core.rolling.SizeAndTimeBasedRollingPolicy">
+                <!-- rollover daily -->
+                <fileNamePattern>${LOG_FILE}.%d{yyyy-MM-dd}.%i.log</fileNamePattern>
+                <maxFileSize>500MB</maxFileSize>
+                <maxHistory>7</maxHistory>
+            </rollingPolicy>
+        </appender>
+
+        <root level="DEBUG">
+            <appender-ref ref="consoleAppender" />
+            <appender-ref ref="FILE" />
+        </root>
+    </springProfile>
+
+</configuration>
